@@ -9,8 +9,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        parchment: "#f5f0e8",
+        surface: "#ffffff",
+        ink: "#1a1a18",
+        muted: "#6b6558",
+        navy: "#1a2e4a",
+        border: "#e8e0d0",
+      },
+      fontFamily: {
+        display: ["Playfair Display", "Georgia", "serif"],
+        hand: ["Caveat", "cursive"],
+        body: ["Inter", "system-ui", "sans-serif"],
       },
     },
   },
