@@ -306,7 +306,7 @@ export default function HeroSection() {
             fill
             quality={85}
             sizes="(max-width: 768px) 100vw, 38vw"
-            className="object-cover object-top"
+            className="object-cover object-top mix-blend-multiply"
             priority
           />
         </div>
