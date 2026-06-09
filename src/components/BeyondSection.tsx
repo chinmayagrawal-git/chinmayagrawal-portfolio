@@ -56,13 +56,13 @@ export default function BeyondSection() {
                 style={{ width: 160, height: 160, border: "2px solid var(--border)" }}
               >
                 <Image
-                  src="/chinmay.jpg"
+                  src="/chinmay_bg.jpg"
                   alt="Chinmay Agrawal"
                   width={160}
                   height={160}
                   sizes="160px"
                   quality={85}
-                  className="object-cover object-top w-full h-full"
+                  className="object-cover object-center w-full h-full"
                 />
               </div>
             </div>
@@ -74,13 +74,13 @@ export default function BeyondSection() {
                 style={{ width: 160, height: 160, border: "2px solid var(--border)" }}
               >
                 <Image
-                  src="/chinmay.jpg"
+                  src="/chinmay_bg.jpg"
                   alt="Chinmay Agrawal"
                   width={160}
                   height={160}
                   sizes="160px"
                   quality={85}
-                  className="object-cover object-top w-full h-full"
+                  className="object-cover object-center w-full h-full"
                 />
               </div>
             </div>
