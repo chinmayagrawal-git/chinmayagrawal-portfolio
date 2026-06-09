@@ -178,7 +178,6 @@ export default function AutomationPage({ params }: { params: { slug: string } })
                           src={`https://drive.google.com/file/d/${videoId}/preview`}
                           style={{ width: "100%", height: "100%", border: "none" }}
                           allow="autoplay; fullscreen"
-                          allowFullScreen
                         />
                       </div>
                     ) : (
