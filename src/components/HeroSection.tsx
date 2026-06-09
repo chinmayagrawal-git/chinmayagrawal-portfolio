@@ -301,12 +301,12 @@ export default function HeroSection() {
       >
         <div ref={photoRef} className="relative w-full" style={{ minHeight: "320px", height: "100%" }}>
           <Image
-            src="/chinmay.jpg"
+            src="/chinmay.png"
             alt="Chinmay Agrawal"
             fill
-            quality={85}
+            quality={90}
             sizes="(max-width: 768px) 100vw, 38vw"
-            className="object-cover object-top mix-blend-multiply"
+            className="object-cover object-top"
             priority
           />
         </div>

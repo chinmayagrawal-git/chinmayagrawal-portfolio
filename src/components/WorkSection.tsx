@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const TABS = ["Projects", "Automations", "Case Studies"] as const;
 type Tab = (typeof TABS)[number];
@@ -40,14 +41,14 @@ const automations = [
 ];
 
 const cases = [
-  { name: "SuperK", problem: "Making 130+ FOFO grocery stores auditable and data-driven.", pdf: "/decks/superk.pdf" },
-  { name: "Firstclub", problem: "A dynamic pricing engine for QComm that can't break customer trust.", pdf: "/decks/firstclub.pdf" },
-  { name: "Instamart", problem: "A pricing engine for FnV where demand is hyperlocal.", pdf: "/decks/instamart.pdf" },
-  { name: "Optimum Nutrition", problem: "Launching Protein Snacking as a new category in India.", pdf: "/decks/on.pdf" },
-  { name: "Swiggy", problem: "Reducing restaurant churn by fixing what partners actually see.", pdf: "/decks/swiggy.pdf" },
-  { name: "Beam Mobility", problem: "Market expansion: identifying where to go and how.", pdf: "/decks/beam.pdf" },
-  { name: "Scapia", problem: "Travel card positioning — don't put all eggs in one basket.", pdf: "/decks/scapia.pdf" },
-  { name: "SaaS Sector Thesis", problem: "Why activity doesn't always mean progress.", pdf: "/decks/saas-thesis.pdf", tag: "Thesis" },
+  { name: "SaaS Sector Thesis", problem: "Why activity doesn't always mean progress.", pdf: "/decks/saas-thesis.pdf", tag: "Thesis", logo: null },
+  { name: "SuperK", problem: "Making 130+ FOFO grocery stores auditable and data-driven.", pdf: "/decks/superk.pdf", tag: null, logo: "/logos/superk.png" },
+  { name: "Firstclub", problem: "A dynamic pricing engine for QComm that can't break customer trust.", pdf: "/decks/firstclub.pdf", tag: null, logo: "/logos/firstclub.png" },
+  { name: "Instamart", problem: "A pricing engine for FnV where demand is hyperlocal.", pdf: "/decks/instamart.pdf", tag: null, logo: "/logos/instamart.png" },
+  { name: "Optimum Nutrition", problem: "Launching Protein Snacking as a new category in India.", pdf: "/decks/on.pdf", tag: null, logo: "/logos/on.png" },
+  { name: "Swiggy", problem: "Reducing restaurant churn by fixing what partners actually see.", pdf: "/decks/swiggy.pdf", tag: null, logo: "/logos/swiggy.png" },
+  { name: "Beam Mobility", problem: "Market expansion: identifying where to go and how.", pdf: "/decks/beam.pdf", tag: null, logo: "/logos/beam.jpg" },
+  { name: "Scapia", problem: "Travel card positioning — don't put all eggs in one basket.", pdf: "/decks/scapia.pdf", tag: null, logo: "/logos/scapia.png" },
 ];
 
 /** Continuous infinite auto-scroll carousel — pauses on hover */
@@ -94,6 +95,49 @@ function InfiniteCarousel({ children }: { children: React.ReactNode[] }) {
   );
 }
 
+function CaseCard({ c, ariaHidden }: { c: typeof cases[0]; ariaHidden?: boolean }) {
+  return (
+    <a
+      href={c.pdf}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-hidden={ariaHidden}
+      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
+      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
+    >
+      <div className="flex flex-col flex-1">
+        <div className="flex items-start justify-between gap-2 mb-3">
+          {c.logo ? (
+            <div style={{ height: "28px", display: "flex", alignItems: "center", width: "100%", justifyContent: "center" }}>
+              <Image
+                src={c.logo}
+                alt={c.name}
+                height={28}
+                width={120}
+                style={{ height: "28px", width: "auto", maxWidth: "120px", objectFit: "contain", objectPosition: "center" }}
+              />
+            </div>
+          ) : (
+            <h3 className="font-body font-semibold text-sm" style={{ color: "var(--ink)" }}>{c.name}</h3>
+          )}
+          {c.tag && (
+            <span
+              className="font-body text-xs px-2 py-0.5 rounded-full flex-shrink-0"
+              style={{ background: "var(--navy)", color: "#fff", fontSize: "10px" }}
+            >
+              {c.tag}
+            </span>
+          )}
+        </div>
+        <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{c.problem}</p>
+        <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
+          View details →
+        </span>
+      </div>
+    </a>
+  );
+}
+
 export default function WorkSection({ initialTab }: { initialTab?: string | null }) {
   const [activeTab, setActiveTab] = useState<Tab>("Projects");
 
@@ -136,65 +180,149 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
       </p>
 
       <div className="tab-content">
-        {/* PROJECTS */}
+        {/* PROJECTS — grid on desktop, carousel on mobile */}
         {activeTab === "Projects" && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {projects.map((p, i) => (
-              <Link
-                key={p.name}
-                href={`/work/${p.slug}`}
-                className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                style={{ background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
-              >
-                {/* "Live Product" stamp — Content Intelligence only */}
-                {p.slug === "content-intelligence" && (
-                  <span style={{
-                    position: "absolute", top: 14, right: 12,
-                    transform: "rotate(-12deg)",
-                    fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    color: "var(--navy)",
-                    border: "1.5px solid var(--navy)",
-                    borderRadius: "3px",
-                    padding: "2px 6px",
-                    lineHeight: 1.4,
-                    pointerEvents: "none",
-                    userSelect: "none",
-                  }}>
-                    Live Product
-                  </span>
-                )}
-                <div className="flex flex-col flex-1">
-                  <h3
-                    className="font-body font-semibold text-sm mb-2"
-                    style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" ? "52px" : undefined }}
-                  >
-                    {p.name}
-                  </h3>
-                  <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
-                    {p.desc}
-                  </p>
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {p.pills.map((pill) => (
-                      <span
-                        key={pill}
-                        className="font-body text-xs px-2.5 py-1 rounded-full"
-                        style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
-                      >
-                        {pill}
-                      </span>
-                    ))}
+          <>
+            {/* Desktop grid (md+) */}
+            <div className="hidden md:grid grid-cols-3 gap-5 max-w-5xl mx-auto">
+              {projects.map((p) => (
+                <Link
+                  key={p.name}
+                  href={`/work/${p.slug}`}
+                  className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
+                  style={{ background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
+                >
+                  {p.slug === "content-intelligence" && (
+                    <span style={{
+                      position: "absolute", top: 14, right: 12,
+                      transform: "rotate(-12deg)",
+                      fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: "var(--navy)",
+                      border: "1.5px solid var(--navy)",
+                      borderRadius: "3px",
+                      padding: "2px 6px",
+                      lineHeight: 1.4,
+                      pointerEvents: "none",
+                      userSelect: "none",
+                    }}>
+                      Live Product
+                    </span>
+                  )}
+                  <div className="flex flex-col flex-1">
+                    <h3
+                      className="font-body font-semibold text-sm mb-2"
+                      style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" ? "52px" : undefined }}
+                    >
+                      {p.name}
+                    </h3>
+                    <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
+                      {p.desc}
+                    </p>
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {p.pills.map((pill) => (
+                        <span
+                          key={pill}
+                          className="font-body text-xs px-2.5 py-1 rounded-full"
+                          style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
+                        >
+                          {pill}
+                        </span>
+                      ))}
+                    </div>
+                    <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
+                      View details →
+                    </span>
                   </div>
-                  <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
-                    View details →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Mobile carousel */}
+            <div className="md:hidden">
+              <InfiniteCarousel>
+                {[
+                  ...projects.map((p, i) => (
+                    <Link
+                      key={`a-${i}`}
+                      href={`/work/${p.slug}`}
+                      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
+                      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
+                    >
+                      {p.slug === "content-intelligence" && (
+                        <span style={{
+                          position: "absolute", top: 14, right: 12,
+                          transform: "rotate(-12deg)",
+                          fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+                          textTransform: "uppercase",
+                          color: "var(--navy)",
+                          border: "1.5px solid var(--navy)",
+                          borderRadius: "3px",
+                          padding: "2px 6px",
+                          lineHeight: 1.4,
+                          pointerEvents: "none",
+                          userSelect: "none",
+                        }}>
+                          Live Product
+                        </span>
+                      )}
+                      <div className="flex flex-col flex-1">
+                        <h3
+                          className="font-body font-semibold text-sm mb-2"
+                          style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" ? "52px" : undefined }}
+                        >
+                          {p.name}
+                        </h3>
+                        <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
+                          {p.desc}
+                        </p>
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                          {p.pills.map((pill) => (
+                            <span
+                              key={pill}
+                              className="font-body text-xs px-2.5 py-1 rounded-full"
+                              style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
+                            >
+                              {pill}
+                            </span>
+                          ))}
+                        </div>
+                        <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
+                          View details →
+                        </span>
+                      </div>
+                    </Link>
+                  )),
+                  ...projects.map((p, i) => (
+                    <Link
+                      key={`b-${i}`}
+                      href={`/work/${p.slug}`}
+                      aria-hidden="true"
+                      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
+                      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
+                    >
+                      <div className="flex flex-col flex-1">
+                        <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{p.name}</h3>
+                        <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>{p.desc}</p>
+                        <div className="flex flex-wrap gap-1.5 mb-4">
+                          {p.pills.map((pill) => (
+                            <span key={pill} className="font-body text-xs px-2.5 py-1 rounded-full"
+                              style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}>
+                              {pill}
+                            </span>
+                          ))}
+                        </div>
+                        <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>View details →</span>
+                      </div>
+                    </Link>
+                  )),
+                ]}
+              </InfiniteCarousel>
+            </div>
+          </>
         )}
 
-        {/* AUTOMATIONS */}
+        {/* AUTOMATIONS — no domain tag pill */}
         {activeTab === "Automations" && (
           <div className="max-w-5xl mx-auto">
             <InfiniteCarousel>
@@ -207,12 +335,6 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
                     style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
                   >
                     <div className="flex flex-col flex-1">
-                      <span
-                        className="font-body text-xs font-semibold px-2.5 py-1 rounded-full mb-3 self-start"
-                        style={{ background: "var(--navy)", color: "#fff", fontSize: "10px", letterSpacing: "0.05em" }}
-                      >
-                        {a.domain}
-                      </span>
                       <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{a.name}</h3>
                       <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{a.desc}</p>
                       <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
@@ -229,12 +351,6 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
                     className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
                     style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
                   >
-                    <span
-                      className="font-body text-xs font-semibold px-2.5 py-1 rounded-full mb-3 self-start"
-                      style={{ background: "var(--navy)", color: "#fff", fontSize: "10px", letterSpacing: "0.05em" }}
-                    >
-                      {a.domain}
-                    </span>
                     <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{a.name}</h3>
                     <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{a.desc}</p>
                     <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
@@ -247,66 +363,13 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
           </div>
         )}
 
-        {/* CASE STUDIES */}
+        {/* CASE STUDIES — logos replacing company names */}
         {activeTab === "Case Studies" && (
           <div className="max-w-5xl mx-auto">
             <InfiniteCarousel>
               {[
-                ...cases.map((c, i) => (
-                  <a
-                    key={`a-${i}`}
-                    href={c.pdf}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                    style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
-                  >
-                    <div className="flex flex-col flex-1">
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <h3 className="font-body font-semibold text-sm" style={{ color: "var(--ink)" }}>{c.name}</h3>
-                        {c.tag && (
-                          <span
-                            className="font-body text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                            style={{ background: "var(--navy)", color: "#fff", fontSize: "10px" }}
-                          >
-                            {c.tag}
-                          </span>
-                        )}
-                      </div>
-                      <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{c.problem}</p>
-                      <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
-                        View details →
-                      </span>
-                    </div>
-                  </a>
-                )),
-                ...cases.map((c, i) => (
-                  <a
-                    key={`b-${i}`}
-                    href={c.pdf}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-hidden="true"
-                    className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                    style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-3">
-                      <h3 className="font-body font-semibold text-sm" style={{ color: "var(--ink)" }}>{c.name}</h3>
-                      {c.tag && (
-                        <span
-                          className="font-body text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-                          style={{ background: "var(--navy)", color: "#fff", fontSize: "10px" }}
-                        >
-                          {c.tag}
-                        </span>
-                      )}
-                    </div>
-                    <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{c.problem}</p>
-                    <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
-                      View details →
-                    </span>
-                  </a>
-                )),
+                ...cases.map((c, i) => <CaseCard key={`a-${i}`} c={c} />),
+                ...cases.map((c, i) => <CaseCard key={`b-${i}`} c={c} ariaHidden />),
               ]}
             </InfiniteCarousel>
           </div>

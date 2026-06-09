@@ -78,3 +78,14 @@ body::before {
     text-wrap: balance;
   }
 }
+
+/* Trajectory pill shimmer — one-time hint that pills are interactive */
+@keyframes traj-shimmer {
+  0%   { box-shadow: 0 0 0 0 rgba(26, 46, 74, 0); }
+  40%  { box-shadow: 0 0 0 4px rgba(26, 46, 74, 0.18); }
+  100% { box-shadow: 0 0 0 0 rgba(26, 46, 74, 0); }
+}
+
+[data-traj-pill] {
+  animation: traj-shimmer 1.8s ease-out 0.6s infinite;
+}

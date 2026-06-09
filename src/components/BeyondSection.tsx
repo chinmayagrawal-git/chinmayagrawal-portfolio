@@ -103,7 +103,7 @@ export default function BeyondSection() {
               className="font-display font-bold mb-8 leading-snug"
               style={{ color: "var(--ink)", fontSize: "1.15rem" }}
             >
-              Founder&apos;s Office, BizOps, and AI Generalist roles at Series A–B startups.
+              Founder&apos;s Office, BizOps, and AI Generalist roles at Seed – Series B startups.
             </p>
 
             <div className="flex flex-col gap-3">
