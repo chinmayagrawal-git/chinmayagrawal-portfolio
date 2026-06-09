@@ -11,9 +11,9 @@ export const metadata: Metadata = {
     siteName: "Chinmay Agrawal",
     images: [
       {
-        url: "https://chinmayagrawal-portfolio.netlify.app/chinmay.jpg",
-        width: 1200,
-        height: 630,
+        url: "https://chinmayagrawal-portfolio.netlify.app/og-banner.jpg",
+        width: 1424,
+        height: 752,
         alt: "Chinmay Agrawal",
       },
     ],
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Chinmay Agrawal",
     description: "Founder's Office, BizOps, and AI Generalist. Shipped three live AI systems. Looking for the next messy problem to own.",
-    images: ["https://chinmayagrawal-portfolio.netlify.app/chinmay.jpg"],
+    images: ["https://chinmayagrawal-portfolio.netlify.app/og-banner.jpg"],
   },
 };
 
