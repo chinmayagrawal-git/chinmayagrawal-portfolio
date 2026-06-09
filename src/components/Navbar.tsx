@@ -32,7 +32,7 @@ export default function Navbar() {
           href="https://drive.google.com/file/d/1u7NVto13puwl3Q1s2BmHUVFEVQzBFKW8/view?usp=drive_link"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm font-body font-medium px-4 py-1.5 rounded-full transition-colors"
+          className="text-sm font-body font-medium px-4 py-1.5 rounded-full transition-colors whitespace-nowrap"
           style={{
             border: "1px solid var(--navy)",
             color: "var(--navy)",
@@ -48,7 +48,7 @@ export default function Navbar() {
         </a>
         <button
           onClick={scrollToContact}
-          className="text-sm font-body font-medium px-4 py-1.5 rounded-full text-white transition-opacity hover:opacity-90"
+          className="text-sm font-body font-medium px-4 py-1.5 rounded-full text-white transition-opacity hover:opacity-90 whitespace-nowrap"
           style={{ background: "var(--navy)" }}
         >
           Contact Me
