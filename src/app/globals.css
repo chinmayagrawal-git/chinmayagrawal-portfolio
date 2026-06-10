@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Caveat:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
-
 :root {
   --bg: #f5f0e8;
   --surface: #ffffff;
@@ -20,7 +18,7 @@
 body {
   background-color: var(--bg);
   color: var(--ink);
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
   position: relative;
   overflow-x: hidden;
 }
@@ -59,18 +57,13 @@ body::before {
   inset: 0;
 }
 
-/* Carousel scroll */
-.carousel-scroll {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+/* Tab switch — quick fade + rise (re-runs because .tab-content is keyed by activeTab) */
+@keyframes tab-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
 }
-.carousel-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-/* Tab transition */
 .tab-content {
-  transition: opacity 0.2s ease;
+  animation: tab-fade 0.25s ease both;
 }
 
 @layer utilities {
@@ -79,7 +72,45 @@ body::before {
   }
 }
 
-/* Trajectory pill shimmer — one-time hint that pills are interactive */
+/* Hero name — hidden until GSAP takes over; CSS fallback reveals it if JS is slow/fails */
+@keyframes name-show {
+  to { opacity: 1; }
+}
+.hero-name {
+  opacity: 0;
+  animation: name-show 0.01s linear 1.2s forwards;
+}
+
+/* Card hover — gentle lift instead of opacity fade */
+.card-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(26, 46, 74, 0.08);
+}
+
+/* Scroll reveal — toggled by IntersectionObserver, runs once */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Video embed loading placeholder */
+@keyframes embed-pulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.embed-pulse {
+  animation: embed-pulse 1.6s ease-in-out infinite;
+}
+
+/* Trajectory pill shimmer — interaction hint, pulses a few times then stops */
 @keyframes traj-shimmer {
   0%   { box-shadow: 0 0 0 0 rgba(26, 46, 74, 0); }
   40%  { box-shadow: 0 0 0 4px rgba(26, 46, 74, 0.18); }
@@ -87,5 +118,14 @@ body::before {
 }
 
 [data-traj-pill] {
-  animation: traj-shimmer 1.8s ease-out 0.6s infinite;
+  animation: traj-shimmer 2.4s ease-out 0.8s 3;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  [data-traj-pill] { animation: none; }
+  .tab-content { animation: none; }
+  .hero-name { opacity: 1; animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .card-lift, .card-lift:hover { transform: none; transition: none; }
 }

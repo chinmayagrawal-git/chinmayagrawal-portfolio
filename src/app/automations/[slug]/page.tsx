@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import VideoEmbed from "@/components/VideoEmbed";
 
 const videoIds: Record<string, string> = {
   "brand-reputation":    "1ak6x_SnNCO6pMzXGIo4GxrH8o210NTKe",
@@ -120,10 +121,10 @@ export default function AutomationPage({ params }: { params: { slug: string } })
 
           {data ? (
             <>
-              {/* Two-column layout: content left, sticky video right */}
-              <div className="flex flex-col md:flex-row gap-12 md:gap-16 mb-12">
-                {/* Left — content */}
-                <div className="flex-1" style={{ maxWidth: "55%" }}>
+              {/* Mobile: video first, text below. Desktop: content left, sticky video right. */}
+              <div className="flex flex-col md:flex-row gap-8 md:gap-16 mb-12">
+                {/* Content — second on mobile, left on desktop */}
+                <div className="flex-1 order-2 md:order-1 md:max-w-[55%]">
                   {/* Domain tag */}
                   <div className="flex gap-2 mb-4">
                     <span
@@ -131,12 +132,6 @@ export default function AutomationPage({ params }: { params: { slug: string } })
                       style={{ background: "var(--navy)", color: "#fff", fontSize: "11px" }}
                     >
                       {data.domain}
-                    </span>
-                    <span
-                      className="font-body text-xs px-3 py-1 rounded-full"
-                      style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)", fontSize: "11px" }}
-                    >
-                      Automation
                     </span>
                   </div>
 
@@ -166,24 +161,15 @@ export default function AutomationPage({ params }: { params: { slug: string } })
                   </div>
                 </div>
 
-                {/* Right — sticky video */}
-                <div
-                  className="w-full md:w-auto"
-                  style={{ flex: "0 0 42%", maxWidth: "42%" }}
-                >
-                  <div style={{ position: "sticky", top: "80px", height: "fit-content" }}>
+                {/* Video — first on mobile, sticky right on desktop */}
+                <div className="w-full order-1 md:order-2 md:max-w-[42%] md:[flex:0_0_42%]">
+                  <div className="md:sticky md:top-[80px]" style={{ height: "fit-content" }}>
                     {videoId ? (
-                      <div style={{ width: "100%", aspectRatio: "16/9", borderRadius: "12px", overflow: "hidden" }}>
-                        <iframe
-                          src={`https://drive.google.com/file/d/${videoId}/preview`}
-                          style={{ width: "100%", height: "100%", border: "none" }}
-                          allow="autoplay; fullscreen"
-                        />
-                      </div>
+                      <VideoEmbed videoId={videoId} />
                     ) : (
                       <div
                         className="w-full rounded-xl flex items-center justify-center"
-                        style={{ aspectRatio: "16/9", background: "#e8e4dc", border: "1px solid var(--border)" }}
+                        style={{ aspectRatio: "16/10", background: "#e8e4dc", border: "1px solid var(--border)" }}
                       >
                         <p className="font-body text-sm" style={{ color: "var(--muted)" }}>Walkthrough coming soon</p>
                       </div>

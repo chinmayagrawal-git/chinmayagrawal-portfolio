@@ -112,6 +112,8 @@ export default function HeroSection() {
           .join(" ");
         const spans = nameRef.current.querySelectorAll<HTMLSpanElement>(".word-span > span");
         gsap.set(spans, { y: 48, opacity: 0.01, skewX: 6 });
+        // Words are now hidden — reveal the h1 (CSS keeps it at opacity 0 until GSAP takes over)
+        gsap.set(nameRef.current, { opacity: 1 });
         gsap.to(spans, {
           y: 0,
           opacity: 1,
@@ -222,7 +224,7 @@ export default function HeroSection() {
           {/* Name */}
           <h1
             ref={nameRef}
-            className="font-display leading-none tracking-tight mb-8"
+            className="hero-name font-display leading-none tracking-tight mb-8"
             style={{
               fontSize: "clamp(2.8rem, 5vw, 5rem)",
               fontWeight: 700,
@@ -299,7 +301,8 @@ export default function HeroSection() {
           overflow: "hidden",
         }}
       >
-        <div ref={photoRef} className="relative w-full" style={{ minHeight: "320px", height: "100%" }}>
+        {/* 112% height so the -10% parallax shift never exposes bare background at the bottom */}
+        <div ref={photoRef} className="relative w-full" style={{ minHeight: "320px", height: "112%" }}>
           <Image
             src="/chinmay.png"
             alt="Chinmay Agrawal"

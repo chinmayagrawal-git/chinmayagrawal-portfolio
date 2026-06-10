@@ -24,7 +24,7 @@ export default function ChatQC() {
           <div className="flex gap-2 mb-4">
             <span
               className="font-body text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ background: "#6b2d1a", color: "#fff", fontSize: "11px" }}
+              style={{ background: "var(--navy)", color: "#fff", fontSize: "11px" }}
             >
               Wishlink
             </span>

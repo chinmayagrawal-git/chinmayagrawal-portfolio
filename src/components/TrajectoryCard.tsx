@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 interface TrajectoryCardProps {
   institution: string;
@@ -9,12 +9,28 @@ interface TrajectoryCardProps {
   forceWidth?: number;
 }
 
+const AUTO_CLOSE_MS = 6000;
+
 export default function TrajectoryCard({ institution, role, duration, back, forceWidth }: TrajectoryCardProps) {
   const [expanded, setExpanded] = useState(false);
   const [cardPos, setCardPos] = useState({ left: 0, top: 0 });
   const pillRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const open = () => {
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const armCloseTimer = () => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => setExpanded(false), AUTO_CLOSE_MS);
+  };
+
+  const open = (viaTouch: boolean) => {
     if (!pillRef.current) return;
     const rect = pillRef.current.getBoundingClientRect();
     const CARD_W = 240;
@@ -25,7 +41,29 @@ export default function TrajectoryCard({ institution, role, duration, back, forc
       top: Math.max(MARGIN, Math.min(rect.top + rect.height / 2 - CARD_H / 2, window.innerHeight - CARD_H - MARGIN)),
     });
     setExpanded(true);
+    // Touch has no mouseleave — auto-close instead. Desktop closes on hover-out.
+    if (viaTouch) armCloseTimer();
   };
+
+  // Track how the pill was activated. Touch taps fire synthesized compat
+  // mouse events (mouseenter, then click) — handling hover via pointerType
+  // keeps the two input paths from toggling each other.
+  const lastPointerTypeRef = useRef<string>("mouse");
+
+  // Tap/click outside closes the card (touch devices have no reliable mouseleave)
+  useEffect(() => {
+    if (!expanded) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const t = e.target as Node;
+      if (pillRef.current?.contains(t) || cardRef.current?.contains(t)) return;
+      setExpanded(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [expanded]);
+
+  // Cleanup on unmount
+  useEffect(() => clearCloseTimer, []);
 
   return (
     <>
@@ -45,9 +83,25 @@ export default function TrajectoryCard({ institution, role, duration, back, forc
           textAlign: "center",
           ...(forceWidth ? { width: forceWidth, minWidth: forceWidth, flexShrink: 0 } : {}),
         }}
-        onMouseEnter={open}
-        onMouseLeave={() => setExpanded(false)}
-        onClick={() => (expanded ? setExpanded(false) : open())}
+        onPointerEnter={(e) => {
+          lastPointerTypeRef.current = e.pointerType;
+          if (e.pointerType === "mouse") open(false);
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") setExpanded(false);
+        }}
+        onPointerDown={(e) => {
+          lastPointerTypeRef.current = e.pointerType;
+        }}
+        onClick={() => {
+          // On desktop the card is already open via hover; only touch needs click.
+          if (lastPointerTypeRef.current === "mouse") return;
+          if (expanded) {
+            setExpanded(false);
+          } else {
+            open(true);
+          }
+        }}
       >
         <span style={{ color: "var(--navy)", fontSize: "11px", fontWeight: 700, whiteSpace: "nowrap", lineHeight: 1.5 }}>
           {institution}
@@ -62,6 +116,7 @@ export default function TrajectoryCard({ institution, role, duration, back, forc
 
       {/* Floating expanded card — position: fixed, edge-clamped to viewport */}
       <div
+        ref={cardRef}
         style={{
           position: "fixed",
           left: cardPos.left,
@@ -77,7 +132,7 @@ export default function TrajectoryCard({ institution, role, duration, back, forc
           transition: "opacity 200ms ease, transform 200ms ease",
           pointerEvents: expanded ? "auto" : "none",
         }}
-        onMouseEnter={() => setExpanded(true)}
+        onMouseEnter={() => { setExpanded(true); clearCloseTimer(); }}
         onMouseLeave={() => setExpanded(false)}
       >
         <p style={{ color: "white", fontSize: "13px", lineHeight: 1.6, textAlign: "left", margin: 0 }}>

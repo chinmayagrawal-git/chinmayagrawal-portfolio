@@ -9,21 +9,18 @@ type Tab = (typeof TABS)[number];
 const projects = [
   {
     name: "Content Intelligence",
-    colorStrip: "#1a2e4a",
     desc: "A personalised analytics product for creators — built from SQL to React in 8 working days.",
-    pills: ["Live product", "8 days, SQL to live", "A/B experiment, 4K+ creators"],
+    pills: ["Vibe-coded", "8 days, SQL to live", "A/B experiment, 4K+ creators"],
     slug: "content-intelligence",
   },
   {
     name: "Wishii",
-    colorStrip: "#2d5a3d",
     desc: "Rebuilt the support chatbot from 7% to 49% self-resolution. Started with a KB audit, ended with a full deployment.",
     pills: ["49% self-res, week 1", "141 query types", "Category-wise rollout"],
     slug: "wishii",
   },
   {
     name: "CS Quality Control Pipeline",
-    colorStrip: "#6b2d1a",
     desc: "Designed a 100-point AI evaluation framework for CS agents — feedback loop and Slack alerting.",
     pills: ["100-pt rubric, 5 dimensions", "Auto Slack alerts", "~5 min/day to run"],
     slug: "chatqc",
@@ -47,16 +44,28 @@ const cases = [
   { name: "Instamart", problem: "A pricing engine for FnV where demand is hyperlocal.", pdf: "/decks/instamart.pdf", tag: null, logo: "/logos/instamart.png" },
   { name: "Optimum Nutrition", problem: "Launching Protein Snacking as a new category in India.", pdf: "/decks/on.pdf", tag: null, logo: "/logos/on.png" },
   { name: "Swiggy", problem: "Reducing restaurant churn by fixing what partners actually see.", pdf: "/decks/swiggy.pdf", tag: null, logo: "/logos/swiggy.png" },
-  { name: "Beam Mobility", problem: "Market expansion: identifying where to go and how.", pdf: "/decks/beam.pdf", tag: null, logo: "/logos/beam.jpg" },
-  { name: "Scapia", problem: "Travel card positioning — don't put all eggs in one basket.", pdf: "/decks/scapia.pdf", tag: null, logo: "/logos/scapia.png" },
+  { name: "Beam Mobility", problem: "Market expansion: identifying where to go and how.", pdf: "/decks/beam.pdf", tag: null, logo: "/logos/beam.png" },
+  { name: "Scapia", problem: "Business model breakdown and growth levers for a zero-forex travel card.", pdf: "/decks/scapia.pdf", tag: null, logo: "/logos/scapia.png" },
 ];
 
-/** Continuous infinite auto-scroll carousel — pauses on hover */
+const CARD_STYLE: React.CSSProperties = {
+  background: "var(--surface)",
+  border: "1px solid var(--border)",
+  textDecoration: "none",
+};
+
+/**
+ * Continuous infinite auto-scroll carousel.
+ * - Time-based speed (frame-rate independent: same px/s on 60Hz and 120Hz)
+ * - Pauses on hover (desktop) and on touch+hold (mobile), resumes shortly after release
+ */
 function InfiniteCarousel({ children }: { children: React.ReactNode[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const pausedRef = useRef(false);
+  const posRef = useRef(0); // float accumulator — scrollLeft truncates to int
   const singleSetWidthRef = useRef(0);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -68,27 +77,56 @@ function InfiniteCarousel({ children }: { children: React.ReactNode[] }) {
   }, [children]);
 
   useEffect(() => {
-    const step = () => {
+    const SPEED = 64; // px per second
+    let last = performance.now();
+    const step = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.1); // clamp tab-switch jumps
+      last = now;
       const el = scrollRef.current;
       if (el && !pausedRef.current) {
-        el.scrollLeft += 1.125;
-        if (singleSetWidthRef.current > 0 && el.scrollLeft >= singleSetWidthRef.current) {
-          el.scrollLeft = 0;
+        posRef.current += SPEED * dt;
+        if (singleSetWidthRef.current > 0 && posRef.current >= singleSetWidthRef.current) {
+          posRef.current -= singleSetWidthRef.current;
         }
+        el.scrollLeft = posRef.current;
       }
       rafRef.current = requestAnimationFrame(step);
     };
     rafRef.current = requestAnimationFrame(step);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
   }, []);
 
+  const pause = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    pausedRef.current = true;
+  };
+  const resumeSoon = () => {
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      pausedRef.current = false;
+    }, 400);
+  };
+
+  /*
+   * Pointer events only, gated by pointerType. Plain mouseenter/mouseleave
+   * breaks on touch devices: after touchend the browser fires a synthesized
+   * compat mouseenter (pausing again) but never a mouseleave — so the
+   * carousel stayed paused forever. Touch compat events do NOT re-fire
+   * pointerenter, so gating by pointerType avoids the cross-talk entirely.
+   */
   return (
     <div
       ref={scrollRef}
       className="flex gap-4 pb-2"
       style={{ overflowX: "hidden" }}
-      onMouseEnter={() => { pausedRef.current = true; }}
-      onMouseLeave={() => { pausedRef.current = false; }}
+      onPointerEnter={(e) => { if (e.pointerType === "mouse") pause(); }}
+      onPointerLeave={(e) => { resumeSoon(); }}
+      onPointerDown={(e) => { if (e.pointerType !== "mouse") pause(); }}
+      onPointerUp={(e) => { if (e.pointerType !== "mouse") resumeSoon(); }}
+      onPointerCancel={() => resumeSoon()}
     >
       {children}
     </div>
@@ -102,8 +140,9 @@ function CaseCard({ c, ariaHidden }: { c: typeof cases[0]; ariaHidden?: boolean 
       target="_blank"
       rel="noopener noreferrer"
       aria-hidden={ariaHidden}
-      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
+      tabIndex={ariaHidden ? -1 : undefined}
+      className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
+      style={{ width: "260px", ...CARD_STYLE }}
     >
       <div className="flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-3">
@@ -131,15 +170,71 @@ function CaseCard({ c, ariaHidden }: { c: typeof cases[0]; ariaHidden?: boolean 
         </div>
         <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{c.problem}</p>
         <span className="font-body text-xs font-medium mt-4" style={{ color: "var(--navy)" }}>
-          View details →
+          View deck →
         </span>
       </div>
     </a>
   );
 }
 
+function ProjectCard({ p, ariaHidden }: { p: typeof projects[0]; ariaHidden?: boolean }) {
+  return (
+    <Link
+      href={`/work/${p.slug}`}
+      aria-hidden={ariaHidden}
+      tabIndex={ariaHidden ? -1 : undefined}
+      className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
+      style={{ width: "260px", ...CARD_STYLE, position: "relative" }}
+    >
+      {p.slug === "content-intelligence" && !ariaHidden && (
+        <span style={{
+          position: "absolute", top: 14, right: 12,
+          transform: "rotate(-12deg)",
+          fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
+          textTransform: "uppercase",
+          color: "var(--navy)",
+          border: "1.5px solid var(--navy)",
+          borderRadius: "3px",
+          padding: "2px 6px",
+          lineHeight: 1.4,
+          pointerEvents: "none",
+          userSelect: "none",
+        }}>
+          Live Product
+        </span>
+      )}
+      <div className="flex flex-col flex-1">
+        <h3
+          className="font-body font-semibold text-sm mb-2"
+          style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" && !ariaHidden ? "52px" : undefined }}
+        >
+          {p.name}
+        </h3>
+        <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
+          {p.desc}
+        </p>
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {p.pills.map((pill) => (
+            <span
+              key={pill}
+              className="font-body text-xs px-2.5 py-1 rounded-full"
+              style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
+            >
+              {pill}
+            </span>
+          ))}
+        </div>
+        <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
+          View details →
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export default function WorkSection({ initialTab }: { initialTab?: string | null }) {
   const [activeTab, setActiveTab] = useState<Tab>("Projects");
+  const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (initialTab && TABS.includes(initialTab as Tab)) {
@@ -147,39 +242,75 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
     }
   }, [initialTab]);
 
+  // One-time scroll reveal
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12 }
+    );
+    el.querySelectorAll(".reveal").forEach((node) => io.observe(node));
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <section id="work" className="py-8 px-6 md:px-16 relative z-10" style={{ background: "var(--bg)" }}>
-      {/* Thin separator above toggle pills */}
+    <section
+      ref={sectionRef}
+      id="work"
+      className="py-8 px-6 md:px-16 relative z-10 scroll-mt-[72px]"
+      style={{ background: "var(--bg)" }}
+    >
+      {/* Thin separator above section heading */}
       <hr style={{ border: 0, borderTop: "1px solid #e8e0d0", marginBottom: "2rem" }} />
-      {/* Tab pills */}
-      <div className="flex justify-center gap-2 mb-8">
-        {TABS.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className="font-body text-sm font-medium px-5 py-2 rounded-full transition-all duration-200"
-            style={
-              activeTab === tab
-                ? { background: "var(--navy)", color: "#fff" }
-                : { background: "transparent", color: "var(--muted)", border: "1px solid var(--border)" }
-            }
-          >
-            {tab}
-          </button>
-        ))}
+
+      <div className="reveal">
+        {/* Section heading */}
+        <h2
+          className="font-display font-bold text-center mb-6"
+          style={{ fontSize: "clamp(1.5rem, 2.4vw, 1.9rem)", color: "var(--ink)" }}
+        >
+          Proof of work
+        </h2>
+
+        {/* Tab pills */}
+        <div className="flex justify-center gap-2 mb-8">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className="font-body text-sm font-medium px-5 py-2 rounded-full transition-all duration-200"
+              style={
+                activeTab === tab
+                  ? { background: "var(--navy)", color: "#fff" }
+                  : { background: "transparent", color: "var(--muted)", border: "1px solid var(--border)" }
+              }
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Context line */}
-      <p
-        className="text-center font-body mb-6"
-        style={{ color: "var(--muted)", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}
-      >
-        {activeTab === "Projects" && "Wishlink · 3 months · 3 systems · individual contributor"}
-        {activeTab === "Automations" && "AI built to automate real problems across functions and industries"}
-        {activeTab === "Case Studies" && "Strategy and ops problems diagnosed across sectors"}
-      </p>
+      {/* Keyed by tab so the fade re-runs on every switch */}
+      <div className="tab-content" key={activeTab}>
+        {/* Context line */}
+        <p
+          className="text-center font-body mb-6"
+          style={{ color: "var(--muted)", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}
+        >
+          {activeTab === "Projects" && "Wishlink · 3 months · 3 systems · individual contributor"}
+          {activeTab === "Automations" && "Working agents built for real problems — CX, ops, GTM, content"}
+          {activeTab === "Case Studies" && "Strategy and ops problems diagnosed across sectors"}
+        </p>
 
-      <div className="tab-content">
         {/* PROJECTS — grid on desktop, carousel on mobile */}
         {activeTab === "Projects" && (
           <>
@@ -189,8 +320,8 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
                 <Link
                   key={p.name}
                   href={`/work/${p.slug}`}
-                  className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                  style={{ background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
+                  className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
+                  style={{ ...CARD_STYLE, position: "relative" }}
                 >
                   {p.slug === "content-intelligence" && (
                     <span style={{
@@ -242,87 +373,15 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
             <div className="md:hidden">
               <InfiniteCarousel>
                 {[
-                  ...projects.map((p, i) => (
-                    <Link
-                      key={`a-${i}`}
-                      href={`/work/${p.slug}`}
-                      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
-                    >
-                      {p.slug === "content-intelligence" && (
-                        <span style={{
-                          position: "absolute", top: 14, right: 12,
-                          transform: "rotate(-12deg)",
-                          fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
-                          textTransform: "uppercase",
-                          color: "var(--navy)",
-                          border: "1.5px solid var(--navy)",
-                          borderRadius: "3px",
-                          padding: "2px 6px",
-                          lineHeight: 1.4,
-                          pointerEvents: "none",
-                          userSelect: "none",
-                        }}>
-                          Live Product
-                        </span>
-                      )}
-                      <div className="flex flex-col flex-1">
-                        <h3
-                          className="font-body font-semibold text-sm mb-2"
-                          style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" ? "52px" : undefined }}
-                        >
-                          {p.name}
-                        </h3>
-                        <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
-                          {p.desc}
-                        </p>
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {p.pills.map((pill) => (
-                            <span
-                              key={pill}
-                              className="font-body text-xs px-2.5 py-1 rounded-full"
-                              style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
-                            >
-                              {pill}
-                            </span>
-                          ))}
-                        </div>
-                        <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
-                          View details →
-                        </span>
-                      </div>
-                    </Link>
-                  )),
-                  ...projects.map((p, i) => (
-                    <Link
-                      key={`b-${i}`}
-                      href={`/work/${p.slug}`}
-                      aria-hidden="true"
-                      className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                      style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none", position: "relative" }}
-                    >
-                      <div className="flex flex-col flex-1">
-                        <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{p.name}</h3>
-                        <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>{p.desc}</p>
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {p.pills.map((pill) => (
-                            <span key={pill} className="font-body text-xs px-2.5 py-1 rounded-full"
-                              style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}>
-                              {pill}
-                            </span>
-                          ))}
-                        </div>
-                        <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>View details →</span>
-                      </div>
-                    </Link>
-                  )),
+                  ...projects.map((p, i) => <ProjectCard key={`a-${i}`} p={p} />),
+                  ...projects.map((p, i) => <ProjectCard key={`b-${i}`} p={p} ariaHidden />),
                 ]}
               </InfiniteCarousel>
             </div>
           </>
         )}
 
-        {/* AUTOMATIONS — no domain tag pill */}
+        {/* AUTOMATIONS */}
         {activeTab === "Automations" && (
           <div className="max-w-5xl mx-auto">
             <InfiniteCarousel>
@@ -331,8 +390,8 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
                   <Link
                     key={`a-${i}`}
                     href={`/automations/${a.slug}`}
-                    className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                    style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
+                    className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
+                    style={{ width: "260px", ...CARD_STYLE }}
                   >
                     <div className="flex flex-col flex-1">
                       <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{a.name}</h3>
@@ -348,8 +407,9 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
                     key={`b-${i}`}
                     href={`/automations/${a.slug}`}
                     aria-hidden="true"
-                    className="flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer transition-opacity hover:opacity-90"
-                    style={{ width: "260px", background: "#e8edf5", border: "1px solid #c8d4e8", textDecoration: "none" }}
+                    tabIndex={-1}
+                    className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
+                    style={{ width: "260px", ...CARD_STYLE }}
                   >
                     <h3 className="font-body font-semibold text-sm mb-2" style={{ color: "var(--ink)" }}>{a.name}</h3>
                     <p className="font-body text-xs leading-relaxed flex-1" style={{ color: "var(--muted)" }}>{a.desc}</p>

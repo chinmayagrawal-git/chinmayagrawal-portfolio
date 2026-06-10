@@ -24,7 +24,7 @@ export default function Wishii() {
           <div className="flex gap-2 mb-4">
             <span
               className="font-body text-xs font-semibold px-3 py-1 rounded-full"
-              style={{ background: "#2d5a3d", color: "#fff", fontSize: "11px" }}
+              style={{ background: "var(--navy)", color: "#fff", fontSize: "11px" }}
             >
               Wishlink
             </span>
@@ -47,7 +47,7 @@ export default function Wishii() {
             className="font-body mb-8"
             style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.6 }}
           >
-            Rebuilt Wishlink&apos;s support chatbot from near-zero effectiveness to 49% self-resolution — starting with a knowledge base, not a model.
+            Rebuilt Wishlink&apos;s support chatbot from 7% to 49% self-resolution — starting with a knowledge base, not a model.
           </p>
 
           <div className="flex flex-wrap gap-2 mb-10">

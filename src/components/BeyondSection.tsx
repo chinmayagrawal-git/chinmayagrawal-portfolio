@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { Mail, Link2, MessageCircle, FileDown } from "lucide-react";
 
@@ -8,14 +9,34 @@ const EMAIL = "chinmay_agrawal@pg26.mesaschool.co";
 const WHATSAPP_URL = "https://wa.me/917889041637";
 
 export default function BeyondSection() {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // One-time scroll reveal
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("is-visible");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.15 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
     <section
       id="contact"
-      className="py-8 px-6 md:px-16 relative z-10"
+      className="py-8 px-6 md:px-16 relative z-10 scroll-mt-[72px]"
       style={{ background: "var(--bg)" }}
     >
       <div
-        className="max-w-5xl mx-auto rounded-2xl p-6 md:p-8"
+        ref={cardRef}
+        className="reveal max-w-5xl mx-auto rounded-2xl p-6 md:p-8"
         style={{
           background: "var(--surface)",
           border: "1px solid var(--border)",

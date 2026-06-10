@@ -17,9 +17,9 @@ const config: Config = {
         border: "#e8e0d0",
       },
       fontFamily: {
-        display: ["Playfair Display", "Georgia", "serif"],
-        hand: ["Caveat", "cursive"],
-        body: ["Inter", "system-ui", "sans-serif"],
+        display: ["var(--font-playfair)", "Playfair Display", "Georgia", "serif"],
+        hand: ["var(--font-caveat)", "Caveat", "cursive"],
+        body: ["var(--font-inter)", "Inter", "system-ui", "sans-serif"],
       },
     },
   },
