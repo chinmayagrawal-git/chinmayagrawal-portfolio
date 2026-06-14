@@ -110,14 +110,23 @@ export default function AutomationPage({ params }: { params: { slug: string } })
         style={{ background: "var(--bg)" }}
       >
         <div className="max-w-[1100px] mx-auto">
-          <Link
-            href="/#work"
-            className="inline-flex items-center gap-1.5 font-body text-sm mb-8 transition-opacity hover:opacity-70"
-            style={{ color: "var(--muted)" }}
-          >
-            <ChevronLeft size={14} />
-            Back
-          </Link>
+          <div className="flex items-center gap-4 mb-8">
+            <Link
+              href="/automations"
+              className="inline-flex items-center gap-1.5 font-body text-sm font-medium px-4 py-1.5 rounded-full transition-opacity hover:opacity-80"
+              style={{ background: "var(--navy)", color: "#fff" }}
+            >
+              <ChevronLeft size={14} />
+              All automations
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1.5 font-body text-sm transition-opacity hover:opacity-70"
+              style={{ color: "var(--muted)" }}
+            >
+              Home
+            </Link>
+          </div>
 
           {data ? (
             <>
