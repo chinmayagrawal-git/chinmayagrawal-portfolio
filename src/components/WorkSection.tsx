@@ -9,21 +9,27 @@ type Tab = (typeof TABS)[number];
 const projects = [
   {
     name: "Content Intelligence",
-    desc: "A personalised analytics product for creators — built from SQL to React in 8 working days.",
-    pills: ["Vibe-coded", "8 days, SQL to live", "A/B experiment, 4K+ creators"],
+    desc: "Creators could see their earnings move — but not why. A personalised analytics page, vibe-coded SQL to React in 8 days.",
+    pills: ["8 days, SQL to live", "1,200+ creators"],
     slug: "content-intelligence",
   },
   {
     name: "Wishii",
-    desc: "Rebuilt the support chatbot from 7% to 49% self-resolution. Started with a KB audit, ended with a full deployment.",
-    pills: ["49% self-res, week 1", "141 query types", "Category-wise rollout"],
+    desc: "The chatbot wasn't the problem — nobody had built what it needed to know. Rebuilt from a knowledge base up.",
+    pills: ["~40% of volume self-resolves", "18,000 convos → taxonomy"],
     slug: "wishii",
   },
   {
     name: "CS Quality Control Pipeline",
-    desc: "Designed a 100-point AI evaluation framework for CS agents — feedback loop and Slack alerting.",
-    pills: ["100-pt rubric, 5 dimensions", "Auto Slack alerts", "~5 min/day to run"],
+    desc: "QC was one person reviewing a sliver by hand. Built a 100-point pipeline that scores every conversation and coaches agents automatically.",
+    pills: ["100-pt rubric, 5 dimensions", "Runs unattended"],
     slug: "chatqc",
+  },
+  {
+    name: "Unified Funnel Dashboard",
+    desc: "Three teams, three data cuts, no agreement on what happened last week. Built the one funnel view everyone now trusts.",
+    pills: ["The Future University · 2024", "4–5 hrs/week saved"],
+    slug: "the-future-university",
   },
 ];
 
@@ -39,6 +45,7 @@ const automations = [
 
 const cases = [
   { name: "SaaS Sector Thesis", problem: "Why activity doesn't always mean progress.", pdf: "/decks/saas-thesis.pdf", tag: "Thesis", logo: null },
+  { name: "Why AI Agents Stall in Production", problem: "Model capability determines pilot success. Coordination maturity determines production scalability.", pdf: "/decks/ai-deployment-thesis.pdf", tag: "Thesis", logo: null },
   { name: "SuperK", problem: "Making 130+ FOFO grocery stores auditable and data-driven.", pdf: "/decks/superk.pdf", tag: null, logo: "/logos/superk.png" },
   { name: "Firstclub", problem: "A dynamic pricing engine for QComm that can't break customer trust.", pdf: "/decks/firstclub.pdf", tag: null, logo: "/logos/firstclub.png" },
   { name: "Instamart", problem: "A pricing engine for FnV where demand is hyperlocal.", pdf: "/decks/instamart.pdf", tag: null, logo: "/logos/instamart.png" },
@@ -184,29 +191,12 @@ function ProjectCard({ p, ariaHidden }: { p: typeof projects[0]; ariaHidden?: bo
       aria-hidden={ariaHidden}
       tabIndex={ariaHidden ? -1 : undefined}
       className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
-      style={{ width: "260px", ...CARD_STYLE, position: "relative" }}
+      style={{ width: "240px", ...CARD_STYLE }}
     >
-      {p.slug === "content-intelligence" && !ariaHidden && (
-        <span style={{
-          position: "absolute", top: 14, right: 12,
-          transform: "rotate(-12deg)",
-          fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: "var(--navy)",
-          border: "1.5px solid var(--navy)",
-          borderRadius: "3px",
-          padding: "2px 6px",
-          lineHeight: 1.4,
-          pointerEvents: "none",
-          userSelect: "none",
-        }}>
-          Live Product
-        </span>
-      )}
       <div className="flex flex-col flex-1">
         <h3
           className="font-body font-semibold text-sm mb-2"
-          style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" && !ariaHidden ? "52px" : undefined }}
+          style={{ color: "var(--ink)" }}
         >
           {p.name}
         </h3>
@@ -306,79 +296,21 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
           className="text-center font-body mb-6"
           style={{ color: "var(--muted)", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase" }}
         >
-          {activeTab === "Projects" && "Wishlink · 3 months · 3 systems · individual contributor"}
+          {activeTab === "Projects" && "Four systems shipped solo — internal ops to customer-facing product"}
           {activeTab === "Automations" && "Working agents built for real problems — CX, ops, GTM, content"}
           {activeTab === "Case Studies" && "Strategy and ops problems diagnosed across sectors"}
         </p>
 
-        {/* PROJECTS — grid on desktop, carousel on mobile */}
+        {/* PROJECTS — carousel on all viewports */}
         {activeTab === "Projects" && (
-          <>
-            {/* Desktop grid (md+) */}
-            <div className="hidden md:grid grid-cols-3 gap-5 max-w-5xl mx-auto">
-              {projects.map((p) => (
-                <Link
-                  key={p.name}
-                  href={`/work/${p.slug}`}
-                  className="card-lift flex-shrink-0 rounded-xl p-5 flex flex-col cursor-pointer"
-                  style={{ ...CARD_STYLE, position: "relative" }}
-                >
-                  {p.slug === "content-intelligence" && (
-                    <span style={{
-                      position: "absolute", top: 14, right: 12,
-                      transform: "rotate(-12deg)",
-                      fontSize: "9px", fontWeight: 700, letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: "var(--navy)",
-                      border: "1.5px solid var(--navy)",
-                      borderRadius: "3px",
-                      padding: "2px 6px",
-                      lineHeight: 1.4,
-                      pointerEvents: "none",
-                      userSelect: "none",
-                    }}>
-                      Live Product
-                    </span>
-                  )}
-                  <div className="flex flex-col flex-1">
-                    <h3
-                      className="font-body font-semibold text-sm mb-2"
-                      style={{ color: "var(--ink)", paddingRight: p.slug === "content-intelligence" ? "52px" : undefined }}
-                    >
-                      {p.name}
-                    </h3>
-                    <p className="font-body text-xs leading-relaxed mb-3 flex-1" style={{ color: "var(--muted)" }}>
-                      {p.desc}
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {p.pills.map((pill) => (
-                        <span
-                          key={pill}
-                          className="font-body text-xs px-2.5 py-1 rounded-full"
-                          style={{ background: "var(--bg)", color: "var(--muted)", border: "1px solid var(--border)" }}
-                        >
-                          {pill}
-                        </span>
-                      ))}
-                    </div>
-                    <span className="font-body text-xs font-medium" style={{ color: "var(--navy)" }}>
-                      View details →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-
-            {/* Mobile carousel */}
-            <div className="md:hidden">
-              <InfiniteCarousel>
-                {[
-                  ...projects.map((p, i) => <ProjectCard key={`a-${i}`} p={p} />),
-                  ...projects.map((p, i) => <ProjectCard key={`b-${i}`} p={p} ariaHidden />),
-                ]}
-              </InfiniteCarousel>
-            </div>
-          </>
+          <div className="max-w-5xl mx-auto">
+            <InfiniteCarousel>
+              {[
+                ...projects.map((p, i) => <ProjectCard key={`a-${i}`} p={p} />),
+                ...projects.map((p, i) => <ProjectCard key={`b-${i}`} p={p} ariaHidden />),
+              ]}
+            </InfiniteCarousel>
+          </div>
         )}
 
         {/* AUTOMATIONS */}
