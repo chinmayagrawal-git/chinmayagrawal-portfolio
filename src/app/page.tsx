@@ -11,7 +11,7 @@ export default function Home() {
 
   useEffect(() => {
     if (window.location.hash === "#work") {
-      setInitialTab("Automations");
+      setInitialTab("AI Systems");
       // Wait a tick for the section to mount, then scroll
       setTimeout(() => {
         document.getElementById("work")?.scrollIntoView({ behavior: "smooth" });

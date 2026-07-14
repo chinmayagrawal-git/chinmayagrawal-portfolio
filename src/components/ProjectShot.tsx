@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Zoomable from "@/components/Zoomable";
 
 /**
  * A framed product screenshot used as a "receipt" in project detail pages.
@@ -22,19 +23,21 @@ export default function ProjectShot({
 }) {
   return (
     <figure className="flex flex-col items-center gap-2 m-0">
-      <div
-        className="rounded-xl overflow-hidden"
-        style={{ border: "1px solid var(--border)", background: "var(--surface)", maxHeight }}
-      >
-        <Image
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          sizes="(max-width: 768px) 90vw, 40vw"
-          style={{ width: "auto", height: "auto", maxHeight, objectFit: "contain", display: "block" }}
-        />
-      </div>
+      <Zoomable src={src} alt={alt}>
+        <div
+          className="rounded-xl overflow-hidden"
+          style={{ border: "1px solid var(--border)", background: "var(--surface)", maxHeight }}
+        >
+          <Image
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
+            sizes="(max-width: 768px) 90vw, 40vw"
+            style={{ width: "auto", height: "auto", maxHeight, objectFit: "contain", display: "block" }}
+          />
+        </div>
+      </Zoomable>
       <figcaption
         className="font-body text-center"
         style={{ color: "var(--muted)", fontSize: "11px", lineHeight: 1.5, maxWidth: "280px" }}

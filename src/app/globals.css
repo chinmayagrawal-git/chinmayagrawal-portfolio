@@ -101,6 +101,40 @@ body::before {
   transform: none;
 }
 
+/* Grid card entrance — staggered rise; re-runs on tab switch (.tab-content is keyed) */
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.tab-grid > * {
+  opacity: 0;
+  animation: card-rise 0.45s ease forwards;
+}
+.tab-grid > *:nth-child(1) { animation-delay: 0.03s; }
+.tab-grid > *:nth-child(2) { animation-delay: 0.07s; }
+.tab-grid > *:nth-child(3) { animation-delay: 0.11s; }
+.tab-grid > *:nth-child(4) { animation-delay: 0.15s; }
+.tab-grid > *:nth-child(5) { animation-delay: 0.19s; }
+.tab-grid > *:nth-child(6) { animation-delay: 0.23s; }
+.tab-grid > *:nth-child(7) { animation-delay: 0.27s; }
+.tab-grid > *:nth-child(8) { animation-delay: 0.31s; }
+.tab-grid > *:nth-child(n+9) { animation-delay: 0.35s; }
+
+/* Live indicator dot — signals an interactive/callable system */
+@keyframes live-dot-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(47, 158, 111, 0.5); }
+  50%      { opacity: 0.5; box-shadow: 0 0 0 4px rgba(47, 158, 111, 0); }
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: #2f9e6f;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: live-dot-pulse 1.6s ease-in-out infinite;
+}
+
 /* Video embed loading placeholder */
 @keyframes embed-pulse {
   0%, 100% { opacity: 0.5; }
@@ -128,4 +162,6 @@ body::before {
   .hero-name { opacity: 1; animation: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
   .card-lift, .card-lift:hover { transform: none; transition: none; }
+  .tab-grid > * { opacity: 1; animation: none; }
+  .live-dot { animation: none; }
 }

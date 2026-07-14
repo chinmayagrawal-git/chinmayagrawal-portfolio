@@ -205,7 +205,7 @@ export default function HeroSection() {
           className="font-body text-center"
           style={{ color: "var(--muted)", opacity: 0.55, fontSize: "11px", letterSpacing: "0.04em" }}
         >
-          Below — three Wishlink systems I shipped, AI agents I built across industries, and strategy work across sectors.
+          Below — agentic systems I built and run, work I shipped at companies, and strategy across sectors.
         </p>
       </div>
 
@@ -285,7 +285,7 @@ export default function HeroSection() {
             className="font-body"
             style={{ color: "var(--muted)", opacity: 0.55, fontSize: "12px", letterSpacing: "0.04em" }}
           >
-            Below — three Wishlink systems I shipped, AI agents I built across industries, and strategy work across sectors.
+            Below — agentic systems I built and run, work I shipped at companies, and strategy across sectors.
           </p>
         </div>
       </div>
