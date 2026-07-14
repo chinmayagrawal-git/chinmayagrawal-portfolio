@@ -57,7 +57,7 @@ export default function AccountOS() {
                 className="font-display font-bold mb-3"
                 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.6rem)", color: "var(--ink)", lineHeight: 1.1 }}
               >
-                Account OS
+                Client OS
               </h1>
 
               <p className="font-body mb-6" style={{ color: "var(--muted)", fontSize: "1.05rem", lineHeight: 1.6 }}>
@@ -83,7 +83,7 @@ export default function AccountOS() {
             {/* Loom — first on mobile, sticky right on desktop */}
             <div className="w-full order-1 md:order-2 md:[flex:0_0_40%]">
               <div className="md:sticky md:top-[80px]" style={{ height: "fit-content" }}>
-                <LoomEmbed loomId={LOOM_ID} title="Account OS — walkthrough" />
+                <LoomEmbed loomId={LOOM_ID} title="Client OS — walkthrough" />
               </div>
             </div>
           </div>

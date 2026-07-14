@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 
-const TABS = ["AI Systems", "Shipped"] as const;
+const TABS = ["AI Systems", "Shipped Projects"] as const;
 type Tab = (typeof TABS)[number];
 
 // Right-aligned secondary destinations — navigate to their own screens.
@@ -14,11 +14,11 @@ const SECONDARY_LINKS = [
 // Self-built, production-grade agentic systems — the interactive tier.
 const systems = [
   {
-    name: "Account OS",
-    desc: "Never walk into a call cold. Every account's context rebuilt overnight — dormancy flagged, briefed to your inbox.",
+    name: "Client OS",
+    desc: "Never walk into a call cold. Every client's context rebuilt overnight — dormancy flagged, briefed to your inbox.",
     pills: ["Reads calls + email", "Dormancy alerts + daily brief"],
-    slug: "account-os",
-    cue: "See the code",
+    slug: "client-os",
+    cue: "See how it works",
     live: false,
   },
   {
@@ -160,7 +160,7 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
   const contextLine =
     activeTab === "AI Systems"
       ? "Production-grade agentic systems I built and run — self-authored, end to end"
-      : "Shipped at companies, to real users — internal ops to customer-facing product";
+      : "Shipped at companies, to real users — internal ops to customer-facing product"; // Shipped Projects tab
 
   return (
     <section
@@ -229,7 +229,7 @@ export default function WorkSection({ initialTab }: { initialTab?: string | null
           </div>
         )}
 
-        {activeTab === "Shipped" && (
+        {activeTab === "Shipped Projects" && (
           <div className="tab-grid grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
             {projects.map((p) => <ProjectCard key={p.slug} p={p} />)}
           </div>
