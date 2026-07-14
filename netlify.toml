@@ -1,0 +1,8 @@
+# RINGG_FROM_NUMBER is Athena's public inbound phone number — it is intentionally
+# rendered on the /systems/athena page (visitors dial it) and used as a hardcoded
+# fallback in the call-me route. Netlify's secrets scanner flags any env-var value
+# that appears in build output, so this one key is exempted. The real secrets
+# (RINGG_API_KEY, RINGG_AGENT_ID) are read only server-side and never appear in
+# output, so they remain scanned and protected.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "RINGG_FROM_NUMBER"
